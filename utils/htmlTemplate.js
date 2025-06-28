@@ -235,6 +235,39 @@ function htmlTemplate(photos) {
         position: relative;
         z-index: 1;
       }
+      .modal-info h2 {
+        font-size: 1.2rem;
+        margin-bottom: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .modal-info .info-row {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 0.9rem;
+        padding: 0.4rem 0.2rem;
+        border-radius: 4px;
+        background: rgba(255,255,255,0.35);
+      }
+      .modal-info .info-icon {
+        width: 1.2em;
+        height: 1.2em;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.7;
+      }
+      .modal-info .info-label {
+        font-weight: bold;
+        color: #6e8efb;
+        min-width: 80px;
+      }
+      .modal-info .info-value {
+        color: #222;
+        word-break: break-all;
+      }
     </style>
     <script>
     // Theme filter logic
@@ -257,15 +290,15 @@ function htmlTemplate(photos) {
         document.getElementById('imgModal').classList.add('open');
         // Set blurred background for info card only
         document.getElementById('modalInfoBg').style.backgroundImage = 'url(' + src + ')';
-        // Gather info
+        // Gather info with icons
         var infoHtml = '';
-        infoHtml += '<h2>Image Information</h2>';
-        infoHtml += '<div class="info-row"><span class="info-label">File Name:</span> <span class="info-value">' + (imgElem.getAttribute('data-name') || '') + '</span></div>';
-        infoHtml += '<div class="info-row"><span class="info-label">Theme:</span> <span class="info-value">' + (imgElem.getAttribute('data-theme') || '') + '</span></div>';
-        infoHtml += '<div class="info-row"><span class="info-label">Base Name:</span> <span class="info-value">' + (imgElem.getAttribute('data-base') || '') + '</span></div>';
-        infoHtml += '<div class="info-row"><span class="info-label">Extension:</span> <span class="info-value">' + (imgElem.getAttribute('data-ext') || '') + '</span></div>';
-        infoHtml += '<div class="info-row"><span class="info-label">Size:</span> <span class="info-value">' + (imgElem.getAttribute('data-size-str') || '') + ' (' + (imgElem.getAttribute('data-size') || '') + ' bytes)</span></div>';
-        infoHtml += '<div class="info-row"><span class="info-label">Created:</span> <span class="info-value">' + (imgElem.getAttribute('data-created') || '') + '</span></div>';
+        infoHtml += '<h2><span class="info-icon">🖼️</span>Image Information</h2>';
+        infoHtml += '<div class="info-row"><span class="info-icon">📄</span><span class="info-label">File Name:</span> <span class="info-value">' + (imgElem.getAttribute('data-name') || '') + '</span></div>';
+        infoHtml += '<div class="info-row"><span class="info-icon">🏷️</span><span class="info-label">Theme:</span> <span class="info-value">' + (imgElem.getAttribute('data-theme') || '') + '</span></div>';
+        infoHtml += '<div class="info-row"><span class="info-icon">🔤</span><span class="info-label">Base Name:</span> <span class="info-value">' + (imgElem.getAttribute('data-base') || '') + '</span></div>';
+        infoHtml += '<div class="info-row"><span class="info-icon">📦</span><span class="info-label">Extension:</span> <span class="info-value">' + (imgElem.getAttribute('data-ext') || '') + '</span></div>';
+        infoHtml += '<div class="info-row"><span class="info-icon">💾</span><span class="info-label">Size:</span> <span class="info-value">' + (imgElem.getAttribute('data-size-str') || '') + ' (' + (imgElem.getAttribute('data-size') || '') + ' bytes)</span></div>';
+        infoHtml += '<div class="info-row"><span class="info-icon">⏰</span><span class="info-label">Created:</span> <span class="info-value">' + (imgElem.getAttribute('data-created') || '') + '</span></div>';
         // Try to show dimensions if possible
         var modalImg = document.getElementById('modalImg');
         modalImg.onload = function() {
@@ -276,9 +309,11 @@ function htmlTemplate(photos) {
             dimRow = document.createElement('div');
             dimRow.className = 'info-row';
             dimRow.id = 'img-dim-row';
+            dimRow.innerHTML = '<span class="info-icon">📐</span><span class="info-label">Dimensions:</span> <span class="info-value">' + w + ' x ' + h + ' px</span>';
             document.getElementById('modalInfo').appendChild(dimRow);
+          } else {
+            dimRow.innerHTML = '<span class="info-icon">📐</span><span class="info-label">Dimensions:</span> <span class="info-value">' + w + ' x ' + h + ' px</span>';
           }
-          dimRow.innerHTML = '<span class="info-label">Dimensions:</span> <span class="info-value">' + w + ' x ' + h + ' px</span>';
         };
         // Insert info after the background
         document.getElementById('modalInfo').innerHTML = '<div class="modal-info-bg" id="modalInfoBg" style="background-image:url(' + src + ')"></div>' + infoHtml;

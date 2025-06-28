@@ -1,0 +1,40 @@
+$themes = @(
+    "arcdark", "atomdark", "cat-frappe", "cat-latte", "catppuccin", "cyberpunk", "dracula", 
+    "everforest", "github-light", "gruvbox", "kanagawa", "material", "melange-dark", 
+    "melange-light", "monokai", "night-owl", "nord", "oceanic-next", "onedark", "rose-pine", 
+    "shades-of-purple", "solarized", "srcery", "sunset-aurant", "sunset-saffron", "sunset-tangerine", 
+    "synthwave-84", "tokyo-dark", "tokyo-moon", "tokyo-storm"
+)
+
+$outputDir = "./outputs"
+$inputDir = "./img"
+
+if (-not (Test-Path $outputDir)) {
+    New-Item -ItemType Directory -Path $outputDir | Out-Null
+}
+
+foreach ($theme in $themes) {
+    $tempOut = "./temp_$theme"
+
+    # আগের temp ফোল্ডার থাকলে ডিলিট করো
+    if (Test-Path $tempOut) {
+        Remove-Item -Recurse -Force $tempOut
+    }
+
+    # gowall.exe convert চালাও, এখানে --theme ব্যবহার করো, --t নয়
+    .\gowall.exe convert --dir $inputDir --theme $theme --output $tempOut
+
+    # যদি temp ফোল্ডার তৈরি হয় তাহলে ফাইলগুলো প্রসেস করো
+    if (Test-Path $tempOut) {
+        Get-ChildItem -Path $tempOut -File | ForEach-Object {
+            $origName = $_.BaseName
+            $ext = $_.Extension
+            $newName = "${origName}_${theme}${ext}"
+            Move-Item -Path $_.FullName -Destination (Join-Path $outputDir $newName)
+        }
+        # temp ফোল্ডার মুছে ফেলো
+        Remove-Item -Recurse -Force $tempOut
+    } else {
+        Write-Warning "Output folder $tempOut was not created for theme $theme"
+    }
+}

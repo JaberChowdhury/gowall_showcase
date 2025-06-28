@@ -206,6 +206,16 @@ function htmlTemplate(photos) {
         };
         // Insert info after the background
         document.getElementById('modalInfo').innerHTML = '<div class="modal-info-bg" id="modalInfoBg" style="background-image:url(' + src + ')"></div>' + infoHtml;
+
+        // Track click
+        fetch('/api/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            image: imgElem.getAttribute('data-name'),
+            theme: imgElem.getAttribute('data-theme')
+          })
+        });
     }
     function closeModal(event) {
         if (event.target.classList.contains('modal') || event.target.classList.contains('modal-close')) {

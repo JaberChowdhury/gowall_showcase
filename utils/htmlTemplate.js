@@ -53,6 +53,13 @@ function htmlTemplate(photos) {
         .modal-close { position: absolute; top: 30px; right: 40px; font-size: 2.5rem; color: #fff; cursor: pointer; font-weight: bold; z-index: 1001; background: none; border: none; transition: color 0.3s; }
         .modal-close:hover { color: #a777e3; }
         @media (max-width: 600px) { .gallery { grid-template-columns: 1fr; } }
+        .blur-up {
+    filter: blur(10px);
+    transition: filter 0.5s;
+}
+.blur-up.loaded {
+    filter: blur(0);
+}
     </style>
 </head>
 <body>
@@ -82,21 +89,22 @@ function htmlTemplate(photos) {
                 ? photos
                     .map((photo) => {
                       const theme = extractTheme(photo.name);
+                      // Assume thumbnail is outputs/thumbs/filename (you can generate these)
+                      const thumbSrc = `/outputs/${photo.name}`; // Replace with `/outputs/thumbs/${photo.name}` if you have thumbs
+                      const fullSrc = `/outputs/${photo.name}`;
                       return `
-                    <div class="photo-card" data-theme="${theme}">
-                        <img loading="lazy" src="/outputs/${photo.name}" alt="${
+                <div class="photo-card" data-theme="${theme}">
+                    <img loading="lazy" src="${thumbSrc}" data-full="${fullSrc}" alt="${
                         photo.name
-                      }" class="photo-img" onclick="openModal('/outputs/${
-                        photo.name
-                      }')">
-                        <div class="photo-info">
-                            <div class="photo-name">${photo.name}</div>
-                            <div class="photo-size">${formatFileSize(
-                              photo.size
-                            )}</div>
-                        </div>
+                      }" class="photo-img blur-up" onclick="openModal('${fullSrc}')">
+                    <div class="photo-info">
+                        <div class="photo-name">${photo.name}</div>
+                        <div class="photo-size">${formatFileSize(
+                          photo.size
+                        )}</div>
                     </div>
-                `;
+                </div>
+            `;
                     })
                     .join("")
                 : '<div class="no-photos">No photos found. Upload some images to get started!</div>'
@@ -140,6 +148,13 @@ function htmlTemplate(photos) {
                 }
             });
         }
+
+        // Blur-up effect for images
+        document.querySelectorAll('.photo-img').forEach(img => {
+            img.addEventListener('load', function() {
+                img.classList.add('loaded');
+            });
+        });
     </script>
 </body>
 </html>

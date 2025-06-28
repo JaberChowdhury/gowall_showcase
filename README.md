@@ -2,6 +2,10 @@
 
 A simple Node.js photo gallery with theme support, image grouping, and dashboard analytics.
 
+## 📸 Screenshot
+
+![Photo Gallery Screenshot](https://i.ibb.co/q3RsZ9Gw/Screenshot-2025-06-29-011420.png)
+
 ## Getting Started
 
 ### 1. Install dependencies

@@ -134,7 +134,13 @@ function htmlTemplate(photos) {
     <!-- Modal HTML -->
     <div class="modal" id="imgModal" onclick="closeModal(event)">
       <span class="modal-close" onclick="closeModal(event)">&times;</span>
-      <img class="modal-img" id="modalImg" src="" alt="">
+      <div class="modal-content">
+        <img class="modal-img" id="modalImg" src="" alt="">
+        <div class="modal-info" id="modalInfo">
+          <div class="info-loading" id="modalInfoLoading" style="display:none;">Loading...</div>
+          <div class="info-content" id="modalInfoContent" style="display:none;"></div>
+        </div>
+      </div>
       <div class="modal-caption" id="modalCaption"></div>
     </div>
     <script>
@@ -160,9 +166,39 @@ function htmlTemplate(photos) {
         var modal = document.getElementById('imgModal');
         var modalImg = document.getElementById('modalImg');
         var modalCaption = document.getElementById('modalCaption');
+        var modalInfo = document.getElementById('modalInfo');
+        var infoLoading = document.getElementById('modalInfoLoading');
+        var infoContent = document.getElementById('modalInfoContent');
         modal.classList.add('open');
         modalImg.src = src;
         modalCaption.textContent = caption;
+
+        // Show loading
+        infoLoading.style.display = '';
+        infoContent.style.display = 'none';
+        infoContent.innerHTML = '';
+
+        // Extract filename from src
+        var filename = src.split('/').pop();
+        fetch('/api/image-info/' + encodeURIComponent(filename))
+          .then(res => res.json())
+          .then(data => {
+            infoLoading.style.display = 'none';
+            infoContent.style.display = '';
+            infoContent.innerHTML =
+              "<h2>" + data.name + "</h2>" +
+              '<div class="info-row"><span class="info-label">Theme:</span> <span class="info-value">' + data.theme + "</span></div>" +
+              '<div class="info-row"><span class="info-label">Pixelate:</span> <span class="info-value">' + (data.pixelate ? "Yes" : "No") + "</span></div>" +
+              '<div class="info-row"><span class="info-label">Size:</span> <span class="info-value">' + (data.size/1024).toFixed(1) + " KB</span></div>" +
+              '<div class="info-row"><span class="info-label">Created:</span> <span class="info-value">' + new Date(data.created).toLocaleString() + "</span></div>" +
+              '<div class="info-row"><span class="info-label">Extension:</span> <span class="info-value">' + data.ext + "</span></div>" +
+              '<div class="info-row"><span class="info-label">Base:</span> <span class="info-value">' + data.base + "</span></div>";
+          })
+          .catch(() => {
+            infoLoading.style.display = 'none';
+            infoContent.style.display = '';
+            infoContent.innerHTML = '<div style="color:#a00;">Failed to load image info.</div>';
+          });
       }
       function closeModal(event) {
         if (event.target.classList.contains('modal') || event.target.classList.contains('modal-close')) {

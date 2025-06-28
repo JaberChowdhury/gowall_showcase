@@ -17,6 +17,12 @@ app.use(fileUpload());
 app.use(express.static("public"));
 app.use("/outputs", express.static(PHOTOS_DIR));
 
+// Serve gallery.css from public directory
+app.use(
+  "/gallery.css",
+  express.static(path.join(__dirname, "public", "gallery.css"))
+);
+
 // Ensure outputs directory exists
 if (!fs.existsSync(PHOTOS_DIR)) {
   fs.mkdirSync(PHOTOS_DIR, { recursive: true });

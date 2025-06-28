@@ -58,6 +58,7 @@ function htmlTemplate(photos) {
   let themeFilterHtml = `
     <div class="theme-filter">
       <button class="theme-btn active" data-theme="all" onclick="filterTheme('all', this)">All Themes</button>
+      <button class="theme-btn" data-theme="pixelate" onclick="filterTheme('pixelate', this)">Pixelated</button>
       ${themes
         .map(
           (theme) =>
@@ -154,7 +155,11 @@ function htmlTemplate(photos) {
         document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         document.querySelectorAll('.photo-card').forEach(card => {
-          if (theme === 'all' || card.getAttribute('data-theme') === theme) {
+          if (
+            theme === 'all' ||
+            card.getAttribute('data-theme') === theme ||
+            (theme === 'pixelate' && card.querySelector('.photo-name').textContent.includes('pixelate'))
+          ) {
             card.style.display = '';
           } else {
             card.style.display = 'none';

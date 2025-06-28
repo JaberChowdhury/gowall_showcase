@@ -115,6 +115,7 @@ function htmlTemplate(photos) {
     <header>
         <h1>Photo Gallery</h1>
         <p>${photos.length} photos available</p>
+        <a href="/dashboard" class="dashboard-btn" style="display:inline-block;margin-top:1rem;padding:0.5rem 1.2rem;background:linear-gradient(135deg,#6e8efb,#a777e3);color:#fff;border-radius:4px;text-decoration:none;font-weight:bold;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:background 0.3s;">📊 View Dashboard</a>
     </header>
     <div class="container">
         <div class="upload-section">

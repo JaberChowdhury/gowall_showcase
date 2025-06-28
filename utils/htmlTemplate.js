@@ -26,20 +26,26 @@ function extractExtension(filename) {
 
 function htmlTemplate(photos) {
   // Get unique themes
-  const themes = Array.from(
-    new Set(photos.map((photo) => extractTheme(photo.name)))
+  const allThemes = Array.from(
+    new Set(photos.map((photo) => extractCategories(photo.name).theme))
   ).sort();
+  const hasPixelate = photos.some(
+    (photo) => extractCategories(photo.name).pixelate
+  );
 
   // Prepare the gallery HTML here (avoid backticks inside backticks)
   let galleryHtml = "";
-  photos.forEach((photo, idx) => {
-    const theme = extractTheme(photo.name);
+  photos.forEach((photo) => {
+    const categories = extractCategories(photo.name);
+    const theme = categories.theme;
+    const pixelate = categories.pixelate;
     const thumbSrc = "/outputs/" + photo.name;
     const fullSrc = "/outputs/" + photo.name;
-    // Add data attributes for modal info
     galleryHtml +=
       '<div class="photo-card" data-theme="' +
       theme +
+      '" data-pixelate="' +
+      (pixelate || "") +
       '">' +
       '<img loading="lazy" src="' +
       thumbSrc +
@@ -54,6 +60,9 @@ function htmlTemplate(photos) {
       '" ' +
       'data-theme="' +
       theme +
+      '" ' +
+      'data-pixelate="' +
+      (pixelate || "") +
       '" ' +
       'data-size="' +
       photo.size +
@@ -83,12 +92,15 @@ function htmlTemplate(photos) {
   });
 
   // Theme buttons HTML
-  const themeButtons = themes
+  const themeButtons = allThemes
     .map(
       (theme) =>
         `<button class="theme-btn" data-theme="${theme}" onclick="filterTheme(event, '${theme}')">${theme}</button>`
     )
     .join("");
+  const pixelateButton = hasPixelate
+    ? `<button class="theme-btn" data-pixelate="pixelate" onclick="filterPixelate(event, 'pixelate')">Pixelated</button>`
+    : "";
 
   return `
 <!DOCTYPE html>
@@ -185,6 +197,7 @@ function htmlTemplate(photos) {
         <div class="theme-filter">
             <button class="theme-btn active" data-theme="all" onclick="filterTheme(event, 'all')">All</button>
             ${themeButtons}
+            ${pixelateButton}
         </div>
         <div class="gallery" id="gallery">
           ${galleryHtml}
@@ -273,14 +286,25 @@ function htmlTemplate(photos) {
     // Theme filter logic
     function filterTheme(event, theme) {
         event.preventDefault();
-        document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.theme-btn[data-theme]').forEach(btn => btn.classList.remove('active'));
         event.target.classList.add('active');
+        const pixelateActive = document.querySelector('.theme-btn[data-pixelate].active');
         document.querySelectorAll('.photo-card').forEach(card => {
-            if (theme === 'all' || card.getAttribute('data-theme') === theme) {
-                card.style.display = '';
-            } else {
-                card.style.display = 'none';
-            }
+            const matchesTheme = (theme === 'all' || card.getAttribute('data-theme') === theme);
+            const matchesPixelate = !pixelateActive || card.getAttribute('data-pixelate') === 'pixelate';
+            card.style.display = (matchesTheme && matchesPixelate) ? '' : 'none';
+        });
+    }
+    function filterPixelate(event, pixelate) {
+        event.preventDefault();
+        document.querySelectorAll('.theme-btn[data-pixelate]').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        const themeActive = document.querySelector('.theme-btn[data-theme].active');
+        const theme = themeActive ? themeActive.getAttribute('data-theme') : 'all';
+        document.querySelectorAll('.photo-card').forEach(card => {
+            const matchesTheme = (theme === 'all' || card.getAttribute('data-theme') === theme);
+            const matchesPixelate = (pixelate === 'pixelate' ? card.getAttribute('data-pixelate') === 'pixelate' : true);
+            card.style.display = (matchesTheme && matchesPixelate) ? '' : 'none';
         });
     }
     // Modal logic
@@ -344,4 +368,24 @@ function htmlTemplate(photos) {
 `;
 }
 
-module.exports = { htmlTemplate };
+function extractCategories(filename) {
+  // Matches _theme[_pixelate].ext or _pixelate.ext
+  const match = filename.match(
+    /_([a-zA-Z0-9\-]+)(?:_pixelate)?\.[a-zA-Z0-9]+$/
+  );
+  const pixelate = filename.includes("_pixelate");
+  let theme = "unknown";
+  if (pixelate) {
+    // Try to extract theme before _pixelate
+    const t = filename.match(/_([a-zA-Z0-9\-]+)_pixelate\.[a-zA-Z0-9]+$/);
+    if (t) theme = t[1];
+  } else if (match) {
+    theme = match[1];
+  }
+  return {
+    theme,
+    pixelate: pixelate ? "pixelate" : null,
+  };
+}
+
+module.exports = { htmlTemplate, extractCategories };

@@ -38,3 +38,36 @@ foreach ($theme in $themes) {
         Write-Warning "Output folder $tempOut was not created for theme $theme"
     }
 }
+
+# --- Batch pixelate conversion example ---
+$batchImages = @("img1.png", "img2.png")
+$batchList = $batchImages -join ", "
+$batchOutputDir = "./outputs/pixelate_batch"
+if (-not (Test-Path $batchOutputDir)) {
+    New-Item -ItemType Directory -Path $batchOutputDir | Out-Null
+}
+.\gowall.exe pixelate --batch $batchList -s 15 --output $batchOutputDir
+
+# Rename pixelate batch outputs for filtering (add _pixelate to name)
+Get-ChildItem -Path $batchOutputDir -File | ForEach-Object {
+    $origName = $_.BaseName
+    $ext = $_.Extension
+    $newName = "${origName}_pixelate${ext}"
+    Move-Item -Path $_.FullName -Destination (Join-Path $outputDir $newName)
+}
+
+# --- Directory pixelate conversion example ---
+$pixelateDir = "./img"
+$pixelateOutputDir = "./outputs/pixelate_dir"
+if (-not (Test-Path $pixelateOutputDir)) {
+    New-Item -ItemType Directory -Path $pixelateOutputDir | Out-Null
+}
+.\gowall.exe pixelate --dir $pixelateDir -s 15 --output $pixelateOutputDir
+
+# Rename pixelate directory outputs for filtering (add _pixelate to name)
+Get-ChildItem -Path $pixelateOutputDir -File | ForEach-Object {
+    $origName = $_.BaseName
+    $ext = $_.Extension
+    $newName = "${origName}_pixelate${ext}"
+    Move-Item -Path $_.FullName -Destination (Join-Path $outputDir $newName)
+}

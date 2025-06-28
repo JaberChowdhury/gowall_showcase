@@ -286,25 +286,30 @@ function htmlTemplate(photos) {
     // Theme filter logic
     function filterTheme(event, theme) {
         event.preventDefault();
+        // Remove active from all theme buttons
         document.querySelectorAll('.theme-btn[data-theme]').forEach(btn => btn.classList.remove('active'));
+        // Remove active from pixelate button
+        document.querySelectorAll('.theme-btn[data-pixelate]').forEach(btn => btn.classList.remove('active'));
+        // Set active only on clicked theme button
         event.target.classList.add('active');
-        const pixelateActive = document.querySelector('.theme-btn[data-pixelate].active');
+        // Show/hide cards
         document.querySelectorAll('.photo-card').forEach(card => {
             const matchesTheme = (theme === 'all' || card.getAttribute('data-theme') === theme);
-            const matchesPixelate = !pixelateActive || card.getAttribute('data-pixelate') === 'pixelate';
-            card.style.display = (matchesTheme && matchesPixelate) ? '' : 'none';
+            card.style.display = matchesTheme ? '' : 'none';
         });
     }
     function filterPixelate(event, pixelate) {
         event.preventDefault();
+        // Remove active from all theme buttons
+        document.querySelectorAll('.theme-btn[data-theme]').forEach(btn => btn.classList.remove('active'));
+        // Remove active from pixelate button
         document.querySelectorAll('.theme-btn[data-pixelate]').forEach(btn => btn.classList.remove('active'));
+        // Set active only on pixelate button
         event.target.classList.add('active');
-        const themeActive = document.querySelector('.theme-btn[data-theme].active');
-        const theme = themeActive ? themeActive.getAttribute('data-theme') : 'all';
+        // Show/hide cards
         document.querySelectorAll('.photo-card').forEach(card => {
-            const matchesTheme = (theme === 'all' || card.getAttribute('data-theme') === theme);
-            const matchesPixelate = (pixelate === 'pixelate' ? card.getAttribute('data-pixelate') === 'pixelate' : true);
-            card.style.display = (matchesTheme && matchesPixelate) ? '' : 'none';
+            const matchesPixelate = card.getAttribute('data-pixelate') === 'pixelate';
+            card.style.display = matchesPixelate ? '' : 'none';
         });
     }
     // Modal logic

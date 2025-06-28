@@ -24,6 +24,13 @@ function extractExtension(filename) {
   return match ? match[1] : "";
 }
 
+// Extract theme and pixelate info from filename
+function extractCategories(filename) {
+  const theme = extractTheme(filename);
+  const pixelate = filename.includes("pixelate");
+  return { theme, pixelate };
+}
+
 function htmlTemplate(photos) {
   // Group images by base name
   const groupedImages = {};
@@ -227,4 +234,5 @@ module.exports = {
   extractTheme,
   extractBaseName,
   extractExtension,
+  extractCategories,
 };

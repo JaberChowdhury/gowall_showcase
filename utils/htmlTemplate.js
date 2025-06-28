@@ -122,11 +122,37 @@ function htmlTemplate(photos) {
         .modal.open { display: flex; opacity: 1; transition: opacity 0.3s; }
         .modal-content { display: flex; flex-direction: row; background: none; }
         .modal-img { max-width: 60vw; max-height: 90vh; border-radius: 8px; box-shadow: 0 2px 20px rgba(0,0,0,0.5); transition: transform 0.3s, box-shadow 0.3s; background: #222; }
-        .modal-info { min-width: 250px; max-width: 350px; background: #fff; color: #222; border-radius: 8px; margin-left: 2rem; padding: 2rem 1.5rem; box-shadow: 0 2px 20px rgba(0,0,0,0.12); display: flex; flex-direction: column; justify-content: center; }
-        .modal-info h2 { font-size: 1.2rem; margin-bottom: 1rem; }
-        .modal-info .info-row { margin-bottom: 0.7rem; }
-        .modal-info .info-label { font-weight: bold; color: #6e8efb; margin-right: 0.5rem; }
-        .modal-info .info-value { color: #333; }
+        .modal-info {
+        position: relative;
+        min-width: 250px;
+        max-width: 350px;
+        background: #fff;
+        color: #222;
+        border-radius: 8px;
+        margin-left: 2rem;
+        padding: 2rem 1.5rem;
+        box-shadow: 0 2px 20px rgba(0,0,0,0.12);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        overflow: hidden;
+      }
+        .modal-info-bg {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: 0;
+        background-size: cover;
+        background-position: center;
+        filter: blur(18px) brightness(0.27);
+        border-radius: 8px;
+        opacity: 0.55;
+        pointer-events: none;
+        transition: background-image 0.3s;
+      }
+        .modal-info > *:not(.modal-info-bg) {
+        position: relative;
+        z-index: 1;
+      }
         .modal-close { position: absolute; top: 30px; right: 40px; font-size: 2.5rem; color: #fff; cursor: pointer; font-weight: bold; z-index: 1001; background: none; border: none; transition: color 0.3s; }
         .modal-close:hover { color: #a777e3; }
         @media (max-width: 900px) {
@@ -168,11 +194,48 @@ function htmlTemplate(photos) {
         <button class="modal-close" onclick="closeModal(event)">&times;</button>
         <div class="modal-content" onclick="event.stopPropagation()">
           <img id="modalImg" class="modal-img" src="" alt="Preview">
-          <div class="modal-info" id="modalInfo">
+          <div class="modal-info" id="modalInfo" style="position:relative;">
+            <div class="modal-info-bg" id="modalInfoBg"></div>
             <!-- Info will be injected here -->
           </div>
         </div>
     </div>
+    <style>
+      .modal-content {
+        position: relative;
+      }
+      .modal-info {
+        min-width: 250px;
+        max-width: 350px;
+        background: #fff;
+        color: #222;
+        border-radius: 8px;
+        margin-left: 2rem;
+        padding: 2rem 1.5rem;
+        box-shadow: 0 2px 20px rgba(0,0,0,0.12);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .modal-info-bg {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: 0;
+        background-size: cover;
+        background-position: center;
+        filter: blur(18px) brightness(0.7);
+        border-radius: 8px;
+        opacity: 0.55;
+        pointer-events: none;
+        transition: background-image 0.3s;
+      }
+      .modal-info > *:not(.modal-info-bg) {
+        position: relative;
+        z-index: 1;
+      }
+    </style>
     <script>
     // Theme filter logic
     function filterTheme(event, theme) {
@@ -192,6 +255,8 @@ function htmlTemplate(photos) {
         var src = imgElem.getAttribute('data-full');
         document.getElementById('modalImg').src = src;
         document.getElementById('imgModal').classList.add('open');
+        // Set blurred background for info card only
+        document.getElementById('modalInfoBg').style.backgroundImage = 'url(' + src + ')';
         // Gather info
         var infoHtml = '';
         infoHtml += '<h2>Image Information</h2>';
@@ -215,7 +280,8 @@ function htmlTemplate(photos) {
           }
           dimRow.innerHTML = '<span class="info-label">Dimensions:</span> <span class="info-value">' + w + ' x ' + h + ' px</span>';
         };
-        document.getElementById('modalInfo').innerHTML = infoHtml;
+        // Insert info after the background
+        document.getElementById('modalInfo').innerHTML = '<div class="modal-info-bg" id="modalInfoBg" style="background-image:url(' + src + ')"></div>' + infoHtml;
     }
     function closeModal(event) {
         if (event.target.classList.contains('modal') || event.target.classList.contains('modal-close')) {

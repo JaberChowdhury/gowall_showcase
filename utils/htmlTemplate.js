@@ -12,6 +12,18 @@ function extractTheme(filename) {
   return match ? match[1] : "unknown";
 }
 
+// Extract base name (without theme and extension)
+function extractBaseName(filename) {
+  const match = filename.match(/^(.+)_([a-zA-Z0-9\-]+)\.[a-zA-Z0-9]+$/);
+  return match ? match[1] : filename;
+}
+
+// Extract extension
+function extractExtension(filename) {
+  const match = filename.match(/\.([a-zA-Z0-9]+)$/);
+  return match ? match[1] : "";
+}
+
 function htmlTemplate(photos) {
   // Get unique themes
   const themes = Array.from(
@@ -20,10 +32,11 @@ function htmlTemplate(photos) {
 
   // Prepare the gallery HTML here (avoid backticks inside backticks)
   let galleryHtml = "";
-  photos.forEach((photo) => {
+  photos.forEach((photo, idx) => {
     const theme = extractTheme(photo.name);
     const thumbSrc = "/outputs/" + photo.name;
     const fullSrc = "/outputs/" + photo.name;
+    // Add data attributes for modal info
     galleryHtml +=
       '<div class="photo-card" data-theme="' +
       theme +
@@ -34,9 +47,30 @@ function htmlTemplate(photos) {
       fullSrc +
       '" alt="' +
       photo.name +
-      '" class="photo-img blur-up" onclick="openModal(\'' +
-      fullSrc +
-      "')\">" +
+      '" class="photo-img blur-up" ' +
+      'onclick="openModal(this)" ' +
+      'data-name="' +
+      photo.name +
+      '" ' +
+      'data-theme="' +
+      theme +
+      '" ' +
+      'data-size="' +
+      photo.size +
+      '" ' +
+      'data-size-str="' +
+      formatFileSize(photo.size) +
+      '" ' +
+      'data-created="' +
+      (photo.created ? new Date(photo.created).toLocaleString() : "") +
+      '" ' +
+      'data-ext="' +
+      extractExtension(photo.name) +
+      '" ' +
+      'data-base="' +
+      extractBaseName(photo.name) +
+      '"' +
+      ">" +
       '<div class="photo-info">' +
       '<div class="photo-name">' +
       photo.name +
@@ -86,18 +120,28 @@ function htmlTemplate(photos) {
         .no-photos { text-align: center; padding: 2rem; color: #666; grid-column: 1 / -1; transition: color 0.3s, padding 0.3s; }
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; }
         .modal.open { display: flex; opacity: 1; transition: opacity 0.3s; }
-        .modal-img { max-width: 90vw; max-height: 90vh; border-radius: 8px; box-shadow: 0 2px 20px rgba(0,0,0,0.5); transition: transform 0.3s, box-shadow 0.3s; }
-        .modal.open .modal-img { transform: scale(1.02); }
+        .modal-content { display: flex; flex-direction: row; background: none; }
+        .modal-img { max-width: 60vw; max-height: 90vh; border-radius: 8px; box-shadow: 0 2px 20px rgba(0,0,0,0.5); transition: transform 0.3s, box-shadow 0.3s; background: #222; }
+        .modal-info { min-width: 250px; max-width: 350px; background: #fff; color: #222; border-radius: 8px; margin-left: 2rem; padding: 2rem 1.5rem; box-shadow: 0 2px 20px rgba(0,0,0,0.12); display: flex; flex-direction: column; justify-content: center; }
+        .modal-info h2 { font-size: 1.2rem; margin-bottom: 1rem; }
+        .modal-info .info-row { margin-bottom: 0.7rem; }
+        .modal-info .info-label { font-weight: bold; color: #6e8efb; margin-right: 0.5rem; }
+        .modal-info .info-value { color: #333; }
         .modal-close { position: absolute; top: 30px; right: 40px; font-size: 2.5rem; color: #fff; cursor: pointer; font-weight: bold; z-index: 1001; background: none; border: none; transition: color 0.3s; }
         .modal-close:hover { color: #a777e3; }
+        @media (max-width: 900px) {
+          .modal-content { flex-direction: column; align-items: center; }
+          .modal-img { max-width: 90vw; margin-bottom: 1.5rem; }
+          .modal-info { margin-left: 0; max-width: 90vw; }
+        }
         @media (max-width: 600px) { .gallery { grid-template-columns: 1fr; } }
         .blur-up {
-    filter: blur(10px);
-    transition: filter 0.5s;
-}
-.blur-up.loaded {
-    filter: blur(0);
-}
+          filter: blur(10px);
+          transition: filter 0.5s;
+        }
+        .blur-up.loaded {
+          filter: blur(0);
+        }
     </style>
 </head>
 <body>
@@ -122,7 +166,12 @@ function htmlTemplate(photos) {
     </div>
     <div class="modal" id="imgModal" onclick="closeModal(event)">
         <button class="modal-close" onclick="closeModal(event)">&times;</button>
-        <img id="modalImg" class="modal-img" src="" alt="Preview">
+        <div class="modal-content" onclick="event.stopPropagation()">
+          <img id="modalImg" class="modal-img" src="" alt="Preview">
+          <div class="modal-info" id="modalInfo">
+            <!-- Info will be injected here -->
+          </div>
+        </div>
     </div>
     <script>
     // Theme filter logic
@@ -139,20 +188,47 @@ function htmlTemplate(photos) {
         });
     }
     // Modal logic
-    function openModal(src) {
+    function openModal(imgElem) {
+        var src = imgElem.getAttribute('data-full');
         document.getElementById('modalImg').src = src;
         document.getElementById('imgModal').classList.add('open');
+        // Gather info
+        var infoHtml = '';
+        infoHtml += '<h2>Image Information</h2>';
+        infoHtml += '<div class="info-row"><span class="info-label">File Name:</span> <span class="info-value">' + (imgElem.getAttribute('data-name') || '') + '</span></div>';
+        infoHtml += '<div class="info-row"><span class="info-label">Theme:</span> <span class="info-value">' + (imgElem.getAttribute('data-theme') || '') + '</span></div>';
+        infoHtml += '<div class="info-row"><span class="info-label">Base Name:</span> <span class="info-value">' + (imgElem.getAttribute('data-base') || '') + '</span></div>';
+        infoHtml += '<div class="info-row"><span class="info-label">Extension:</span> <span class="info-value">' + (imgElem.getAttribute('data-ext') || '') + '</span></div>';
+        infoHtml += '<div class="info-row"><span class="info-label">Size:</span> <span class="info-value">' + (imgElem.getAttribute('data-size-str') || '') + ' (' + (imgElem.getAttribute('data-size') || '') + ' bytes)</span></div>';
+        infoHtml += '<div class="info-row"><span class="info-label">Created:</span> <span class="info-value">' + (imgElem.getAttribute('data-created') || '') + '</span></div>';
+        // Try to show dimensions if possible
+        var modalImg = document.getElementById('modalImg');
+        modalImg.onload = function() {
+          var w = modalImg.naturalWidth;
+          var h = modalImg.naturalHeight;
+          var dimRow = document.getElementById('img-dim-row');
+          if (!dimRow) {
+            dimRow = document.createElement('div');
+            dimRow.className = 'info-row';
+            dimRow.id = 'img-dim-row';
+            document.getElementById('modalInfo').appendChild(dimRow);
+          }
+          dimRow.innerHTML = '<span class="info-label">Dimensions:</span> <span class="info-value">' + w + ' x ' + h + ' px</span>';
+        };
+        document.getElementById('modalInfo').innerHTML = infoHtml;
     }
     function closeModal(event) {
         if (event.target.classList.contains('modal') || event.target.classList.contains('modal-close')) {
             document.getElementById('imgModal').classList.remove('open');
             document.getElementById('modalImg').src = '';
+            document.getElementById('modalInfo').innerHTML = '';
         }
     }
     document.addEventListener('keydown', function(e) {
         if (e.key === "Escape") {
             document.getElementById('imgModal').classList.remove('open');
             document.getElementById('modalImg').src = '';
+            document.getElementById('modalInfo').innerHTML = '';
         }
     });
     // Blur-up effect for images

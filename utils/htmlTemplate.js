@@ -208,6 +208,7 @@ function htmlTemplate(photos) {
               '<div class="info-row"><span class="info-label">Pixelate:</span> <span class="info-value">' + (data.pixelate ? "Yes" : "No") + "</span></div>" +
               '<div class="info-row"><span class="info-label">Size:</span> <span class="info-value">' + (data.size/1024).toFixed(1) + " KB</span></div>" +
               '<div class="info-row"><span class="info-label">Dimensions:</span> <span class="info-value">' + (data.width && data.height ? data.width + " × " + data.height + " px" : "Unknown") + "</span></div>" +
+              '<div class="info-row"><span class="info-label">Aspect Ratio:</span> <span class="info-value">' + (data.aspectRatio || "Unknown") + "</span></div>" +
               '<div class="info-row"><span class="info-label">Type:</span> <span class="info-value">' + (data.type || "Unknown") + "</span></div>" +
               '<div class="info-row"><span class="info-label">MIME:</span> <span class="info-value">' + (data.mime || "Unknown") + "</span></div>" +
               '<div class="info-row"><span class="info-label">Created:</span> <span class="info-value">' + new Date(data.created).toLocaleString() + "</span></div>" +

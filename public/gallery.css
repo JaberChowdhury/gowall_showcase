@@ -1,3 +1,84 @@
+/* Theme variables */
+:root {
+  --color-bg: #f5f5f5;
+  --color-text: #333;
+  --color-header-bg: linear-gradient(135deg, #6e8efb, #a777e3);
+  --color-header-text: #fff;
+  --color-card-bg: #fff;
+  --color-card-shadow: rgba(0, 0, 0, 0.1);
+  --color-upload-bg: #fff;
+  --color-upload-shadow: rgba(0, 0, 0, 0.05);
+  --color-theme-btn-bg: #e0e0e0;
+  --color-theme-btn-text: #333;
+  --color-theme-btn-active-bg: linear-gradient(135deg, #6e8efb, #a777e3);
+  --color-theme-btn-active-text: #fff;
+  --color-photo-card-bg: #fff;
+  --color-photo-card-shadow: rgba(0, 0, 0, 0.1);
+  --color-photo-card-hover-shadow: rgba(0, 0, 0, 0.2);
+  --color-photo-info-text: #666;
+  --color-upload-btn-bg: linear-gradient(135deg, #6e8efb, #a777e3);
+  --color-upload-btn-text: #fff;
+  --color-no-photos-text: #666;
+  --color-modal-bg: rgba(0, 0, 0, 0.85);
+  --color-modal-img-bg: #222;
+  --color-modal-info-bg: #fff;
+  --color-modal-info-text: #222;
+  --color-info-label: #6e8efb;
+  --color-info-value: #222;
+  --color-info-loading: #6e8efb;
+  --color-modal-close: #fff;
+  --color-modal-close-hover: #a777e3;
+  --color-toggle-btn-bg: #eee;
+  --color-toggle-btn-text: #6e8efb;
+  --color-toggle-btn-active-bg: linear-gradient(135deg, #6e8efb, #a777e3);
+  --color-toggle-btn-active-text: #fff;
+  --color-img-group-card-bg: #fafbff;
+  --color-img-group-card-shadow: rgba(110, 142, 251, 0.07);
+  --color-img-group-title: #a777e3;
+  --color-img-theme: #6e8efb;
+}
+
+/* Catppuccin Mocha theme */
+[data-theme="mocha"] {
+  --color-bg: #1e1e2e;
+  --color-text: #cdd6f4;
+  --color-header-bg: linear-gradient(135deg, #45475a, #181825);
+  --color-header-text: #cdd6f4;
+  --color-card-bg: #181825;
+  --color-card-shadow: rgba(30, 32, 46, 0.5);
+  --color-upload-bg: #181825;
+  --color-upload-shadow: rgba(30, 32, 46, 0.5);
+  --color-theme-btn-bg: #313244;
+  --color-theme-btn-text: #cdd6f4;
+  --color-theme-btn-active-bg: linear-gradient(135deg, #a6e3a1, #f5c2e7);
+  --color-theme-btn-active-text: #1e1e2e;
+  --color-photo-card-bg: #181825;
+  --color-photo-card-shadow: rgba(30, 32, 46, 0.5);
+  --color-photo-card-hover-shadow: rgba(166, 227, 161, 0.15);
+  --color-photo-info-text: #a6adc8;
+  --color-upload-btn-bg: linear-gradient(135deg, #a6e3a1, #f5c2e7);
+  --color-upload-btn-text: #1e1e2e;
+  --color-no-photos-text: #a6adc8;
+  --color-modal-bg: rgba(24, 24, 37, 0.97);
+  --color-modal-img-bg: #313244;
+  --color-modal-info-bg: #1e1e2e;
+  --color-modal-info-text: #cdd6f4;
+  --color-info-label: #a6e3a1;
+  --color-info-value: #cdd6f4;
+  --color-info-loading: #f5c2e7;
+  --color-modal-close: #cdd6f4;
+  --color-modal-close-hover: #f5c2e7;
+  --color-toggle-btn-bg: #313244;
+  --color-toggle-btn-text: #a6e3a1;
+  --color-toggle-btn-active-bg: linear-gradient(135deg, #a6e3a1, #f5c2e7);
+  --color-toggle-btn-active-text: #1e1e2e;
+  --color-img-group-card-bg: #181825;
+  --color-img-group-card-shadow: rgba(166, 227, 161, 0.07);
+  --color-img-group-title: #f5c2e7;
+  --color-img-theme: #a6e3a1;
+}
+
+/* Base styles */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -5,13 +86,13 @@
   font-family: "Arial", sans-serif;
 }
 body {
-  background-color: #f5f5f5;
-  color: #333;
+  background-color: var(--color-bg);
+  color: var(--color-text);
   transition: background-color 0.3s, color 0.3s;
 }
 header {
-  background: linear-gradient(135deg, #6e8efb, #a777e3);
-  color: white;
+  background: var(--color-header-bg);
+  color: var(--color-header-text);
   padding: 2rem;
   text-align: center;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -28,10 +109,10 @@ h1 {
   transition: max-width 0.3s, margin 0.3s, padding 0.3s;
 }
 .upload-section {
-  background: white;
+  background: var(--color-upload-bg);
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 15px var(--color-upload-shadow);
   margin-bottom: 2rem;
   text-align: center;
   transition: background 0.3s, box-shadow 0.3s;
@@ -46,16 +127,16 @@ h1 {
   padding: 0.5rem 1.2rem;
   border: none;
   border-radius: 4px;
-  background: #e0e0e0;
-  color: #333;
+  background: var(--color-theme-btn-bg);
+  color: var(--color-theme-btn-text);
   cursor: pointer;
   font-size: 1rem;
   transition: background 0.3s, color 0.3s, transform 0.3s;
 }
 .theme-btn.active,
 .theme-btn:hover {
-  background: linear-gradient(135deg, #6e8efb, #a777e3);
-  color: #fff;
+  background: var(--color-theme-btn-active-bg);
+  color: var(--color-theme-btn-active-text);
   transform: scale(1.05);
 }
 .gallery {
@@ -66,15 +147,15 @@ h1 {
   transition: gap 0.3s, padding 0.3s;
 }
 .photo-card {
-  background: white;
+  background: var(--color-photo-card-bg);
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 10px var(--color-photo-card-shadow);
   transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
 }
 .photo-card:hover {
   transform: translateY(-5px) scale(1.03);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 15px var(--color-photo-card-hover-shadow);
 }
 .photo-img {
   width: 100%;
@@ -100,13 +181,13 @@ h1 {
   transition: color 0.3s;
 }
 .photo-size {
-  color: #666;
+  color: var(--color-photo-info-text);
   font-size: 0.8rem;
   transition: color 0.3s;
 }
 .upload-btn {
-  background: linear-gradient(135deg, #6e8efb, #a777e3);
-  color: white;
+  background: var(--color-upload-btn-bg);
+  color: var(--color-upload-btn-text);
   border: none;
   padding: 0.8rem 1.5rem;
   border-radius: 4px;
@@ -120,7 +201,7 @@ h1 {
 .no-photos {
   text-align: center;
   padding: 2rem;
-  color: #666;
+  color: var(--color-no-photos-text);
   grid-column: 1 / -1;
   transition: color 0.3s, padding 0.3s;
 }
@@ -132,7 +213,7 @@ h1 {
   top: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.85);
+  background: var(--color-modal-bg);
   justify-content: center;
   align-items: center;
   opacity: 0;
@@ -160,15 +241,15 @@ h1 {
   max-height: 90vh;
   border-radius: 8px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
-  background: #222;
+  background: var(--color-modal-img-bg);
 }
 .modal-info {
   position: relative;
   min-width: 350px;
   max-width: 600px; /* Increased from 350px */
   flex: 1 1 300px; /* Allow to grow and shrink, prefer 300px */
-  background: #fff;
-  color: #222;
+  background: var(--color-modal-info-bg);
+  color: var(--color-modal-info-text);
   border-radius: 8px;
   padding: 2rem 1.5rem;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.12);
@@ -188,15 +269,15 @@ h1 {
 }
 .info-label {
   font-weight: bold;
-  color: #6e8efb;
+  color: var(--color-info-label);
   min-width: 80px;
 }
 .info-value {
-  color: #222;
+  color: var(--color-info-value);
   word-break: break-all;
 }
 .info-loading {
-  color: #6e8efb;
+  color: var(--color-info-loading);
   font-weight: bold;
   text-align: center;
   margin: 2rem 0;
@@ -206,7 +287,7 @@ h1 {
   top: 30px;
   right: 40px;
   font-size: 2.5rem;
-  color: #fff;
+  color: var(--color-modal-close);
   cursor: pointer;
   font-weight: bold;
   z-index: 1001;
@@ -215,7 +296,7 @@ h1 {
   transition: color 0.3s;
 }
 .modal-close:hover {
-  color: #a777e3;
+  color: var(--color-modal-close-hover);
 }
 /* Tab toggle styles for gallery page */
 .toggle-btn-row {
@@ -226,8 +307,8 @@ h1 {
   display: inline-block;
   margin: 0 0.5rem 1.5rem 0.5rem;
   padding: 0.4rem 1.1rem;
-  background: #eee;
-  color: #6e8efb;
+  background: var(--color-toggle-btn-bg);
+  color: var(--color-toggle-btn-text);
   border-radius: 4px;
   border: none;
   font-weight: bold;
@@ -235,20 +316,20 @@ h1 {
   transition: background 0.2s, color 0.2s;
 }
 .group-toggle-btn.active {
-  background: linear-gradient(135deg, #6e8efb, #a777e3);
-  color: #fff;
+  background: var(--color-toggle-btn-active-bg);
+  color: var(--color-toggle-btn-active-text);
 }
 .img-group-card {
-  background: #fafbff;
+  background: var(--color-img-group-card-bg);
   border-radius: 8px;
-  box-shadow: 0 1px 6px rgba(110, 142, 251, 0.07);
+  box-shadow: 0 1px 6px var(--color-img-group-card-shadow);
   padding: 1rem;
   margin-bottom: 1.5rem;
 }
 .img-group-title {
   font-weight: bold;
   margin-bottom: 0.7rem;
-  color: #a777e3;
+  color: var(--color-img-group-title);
 }
 .img-group-variants {
   display: grid;
@@ -270,7 +351,7 @@ h1 {
 }
 .img-group-variant .img-theme {
   font-size: 0.92rem;
-  color: #6e8efb;
+  color: var(--color-img-theme);
   word-break: break-all;
   text-align: center;
 }

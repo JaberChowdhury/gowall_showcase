@@ -287,17 +287,24 @@ function htmlTemplate(photos) {
       (function() {
         const btn = document.getElementById('themeSwitcher');
         if (!btn) return;
-        // Save theme in localStorage
-        function setTheme(theme) {
-          if (theme) {
-            document.body.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-            btn.textContent = theme === "mocha" ? "☀️ Light Theme" : "🌗 Mocha Theme";
+        // Supported themes and labels
+        const themes = [
+          { key: null, label: "🌗 Mocha Theme" },
+          { key: "latte", label: "🌞 Latte Theme" },
+          { key: "frappe", label: "🧊 Frappé Theme" },
+          { key: "macchiato", label: "🥤 Macchiato Theme" }
+        ];
+        function setTheme(themeKey) {
+          if (themeKey) {
+            document.body.setAttribute('data-theme', themeKey);
+            localStorage.setItem('theme', themeKey);
           } else {
             document.body.removeAttribute('data-theme');
             localStorage.removeItem('theme');
-            btn.textContent = "🌗 Mocha Theme";
           }
+          // Update button label
+          const found = themes.find(t => t.key === themeKey);
+          btn.textContent = found ? found.label : "🌗 Mocha Theme";
         }
         // On load, set theme from localStorage
         const saved = localStorage.getItem('theme');
@@ -305,7 +312,9 @@ function htmlTemplate(photos) {
 
         btn.addEventListener('click', function() {
           const current = document.body.getAttribute('data-theme');
-          setTheme(current === "mocha" ? null : "mocha");
+          let idx = themes.findIndex(t => t.key === current);
+          idx = (idx + 1) % themes.length;
+          setTheme(themes[idx].key);
         });
       })();
     </script>

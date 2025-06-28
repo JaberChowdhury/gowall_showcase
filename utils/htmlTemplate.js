@@ -1,7 +1,5 @@
 const path = require("path");
-const sizeOf = require("image-size");
-
-const PHOTOS_DIR = path.join(__dirname, "..", "outputs");
+const { buildHtml } = require("./htmlBuilder");
 
 function formatFileSize(bytes) {
   if (bytes === 0) return "0 Bytes";
@@ -49,63 +47,115 @@ function htmlTemplate(photos) {
   });
   const themes = Array.from(themesSet).sort();
 
-  // Flat gallery HTML
-  let galleryHtml = "";
-  photos.forEach((photo) => {
-    const theme = extractTheme(photo.name);
-    galleryHtml += `<div class="photo-card" data-theme="${theme}">
-        <img loading="lazy" src="/outputs/${photo.name}" alt="${
-      photo.name
-    }" class="photo-img blur-up" onload="this.classList.add('loaded')" onclick="openModal('/outputs/${
-      photo.name
-    }', '${photo.name}')">
-        <div class="photo-info">
-          <div class="photo-name">${photo.name}</div>
-          <div class="photo-size">${formatFileSize(photo.size)}</div>
-        </div>
-      </div>`;
+  // Theme filter buttons using buildHtml
+  const themeFilterHtml = buildHtml({
+    type: "div",
+    className: "theme-filter",
+    children: [
+      {
+        type: "button",
+        className: "theme-btn active",
+        "data-theme": "all",
+        onclick: "filterTheme('all', this)",
+        children: "All Themes",
+      },
+      {
+        type: "button",
+        className: "theme-btn",
+        "data-theme": "pixelate",
+        onclick: "filterTheme('pixelate', this)",
+        children: "Pixelated",
+      },
+      ...themes.map((theme) => ({
+        type: "button",
+        className: "theme-btn",
+        "data-theme": theme,
+        onclick: `filterTheme('${theme}', this)`,
+        children: theme,
+      })),
+    ],
   });
 
-  // Theme filter buttons`
-  let themeFilterHtml = `
-    <div class="theme-filter">
-      <button class="theme-btn active" data-theme="all" onclick="filterTheme('all', this)">All Themes</button>
-      <button class="theme-btn" data-theme="pixelate" onclick="filterTheme('pixelate', this)">Pixelated</button>
-      ${themes
-        .map(
-          (theme) =>
-            `<button class="theme-btn" data-theme="${theme}" onclick="filterTheme('${theme}', this)">${theme}</button>`
-        )
-        .join("")}
-    </div>
-  `;
+  // Flat gallery HTML using buildHtml
+  const galleryHtml = buildHtml({
+    type: "div",
+    className: "gallery",
+    children: photos.map((photo) => ({
+      type: "div",
+      className: "photo-card",
+      "data-theme": extractTheme(photo.name),
+      children: [
+        {
+          type: "img",
+          loading: "lazy",
+          src: `/outputs/${photo.name}`,
+          alt: photo.name,
+          className: "photo-img blur-up",
+          onload: "this.classList.add('loaded')",
+          onclick: `openModal('/outputs/${photo.name}', '${photo.name}')`,
+        },
+        {
+          type: "div",
+          className: "photo-info",
+          children: [
+            {
+              type: "div",
+              className: "photo-name",
+              children: photo.name,
+            },
+            {
+              type: "div",
+              className: "photo-size",
+              children: formatFileSize(photo.size),
+            },
+          ],
+        },
+      ],
+    })),
+  });
 
-  // Grouped gallery HTML
-  let groupedHtml = "";
-  Object.entries(groupedImages).forEach(([base, imgs]) => {
-    groupedHtml += `
-      <div class="img-group-card">
-        <div class="img-group-title">${base}</div>
-        <div class="img-group-variants">
-          ${imgs
-            .map((photo) => {
-              const theme = extractTheme(photo.name);
-              return `
-                  <div class="img-group-variant">
-                    <img src="/outputs/${photo.name}" alt="${
-                photo.name
-              }" class="photo-img blur-up" onload="this.classList.add('loaded')" onclick="openModal('/outputs/${
-                photo.name
-              }', '${photo.name}')">
-                    <div class="img-theme">${theme}</div>
-                    <div class="photo-size">${formatFileSize(photo.size)}</div>
-                  </div>
-                `;
-            })
-            .join("")}
-        </div>
-      </div>
-    `;
+  // Grouped gallery HTML using buildHtml
+  const groupedHtml = buildHtml({
+    type: "div",
+    children: Object.entries(groupedImages).map(([base, imgs]) => ({
+      type: "div",
+      className: "img-group-card",
+      children: [
+        {
+          type: "div",
+          className: "img-group-title",
+          children: base,
+        },
+        {
+          type: "div",
+          className: "img-group-variants",
+          children: imgs.map((photo) => ({
+            type: "div",
+            className: "img-group-variant",
+            children: [
+              {
+                type: "img",
+                src: `/outputs/${photo.name}`,
+                alt: photo.name,
+                className: "photo-img blur-up",
+                onload: "this.classList.add('loaded')",
+                onclick: `openModal('/outputs/${photo.name}', '${photo.name}')`,
+              },
+              {
+                type: "div",
+                className: "img-theme",
+                children: extractTheme(photo.name),
+              },
+              {
+                type: "div",
+                className: "photo-size",
+                children: formatFileSize(photo.size),
+              },
+            ],
+          })),
+        },
+      ],
+    })),
   });
 
   return `
@@ -136,9 +186,7 @@ function htmlTemplate(photos) {
         </div>
         <div id="allImagesSection">
           ${themeFilterHtml}
-          <div class="gallery">
-            ${galleryHtml}
-          </div>
+          ${galleryHtml}
         </div>
         <div id="groupedImagesSection" style="display:none;">
           ${groupedHtml}

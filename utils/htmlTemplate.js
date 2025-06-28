@@ -172,6 +172,7 @@ function htmlTemplate(photos) {
         <h1>Photo Gallery</h1>
         <p>${photos.length} photos available</p>
         <a href="/dashboard" class="dashboard-btn" style="display:inline-block;margin-top:1rem;padding:0.5rem 1.2rem;background:linear-gradient(135deg,#6e8efb,#a777e3);color:#fff;border-radius:4px;text-decoration:none;font-weight:bold;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:background 0.3s;">📊 View Dashboard</a>
+        <button id="themeSwitcher" class="theme-switcher-btn" style="margin-left:1rem;padding:0.5rem 1.2rem;border-radius:4px;border:none;cursor:pointer;font-weight:bold;background:var(--color-theme-btn-bg);color:var(--color-theme-btn-text);transition:background 0.3s;">🌗 Switch Theme</button>
     </header>
     <div class="container">
         <div class="upload-section">
@@ -202,7 +203,7 @@ function htmlTemplate(photos) {
           <div class="info-content" id="modalInfoContent" style="display:none;"></div>
         </div>
       </div>
-      <div class="modal-caption" id="modalCaption"></div>
+      <div class="modal-caption" id="modalCaption" style="display:none;"></div>
     </div>
     <script>
       function toggleGroup(grouped) {
@@ -282,6 +283,31 @@ function htmlTemplate(photos) {
           document.getElementById('imgModal').classList.remove('open');
         }
       });
+      // Theme switcher logic
+      (function() {
+        const btn = document.getElementById('themeSwitcher');
+        if (!btn) return;
+        // Save theme in localStorage
+        function setTheme(theme) {
+          if (theme) {
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            btn.textContent = theme === "mocha" ? "☀️ Light Theme" : "🌗 Mocha Theme";
+          } else {
+            document.body.removeAttribute('data-theme');
+            localStorage.removeItem('theme');
+            btn.textContent = "🌗 Mocha Theme";
+          }
+        }
+        // On load, set theme from localStorage
+        const saved = localStorage.getItem('theme');
+        setTheme(saved);
+
+        btn.addEventListener('click', function() {
+          const current = document.body.getAttribute('data-theme');
+          setTheme(current === "mocha" ? null : "mocha");
+        });
+      })();
     </script>
 </body>
 </html>

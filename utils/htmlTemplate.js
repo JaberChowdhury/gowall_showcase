@@ -44,7 +44,9 @@ function htmlTemplate(photos) {
     galleryHtml += `<div class="photo-card" data-theme="${theme}">
         <img loading="lazy" src="/outputs/${photo.name}" alt="${
       photo.name
-    }" class="photo-img blur-up">
+    }" class="photo-img blur-up" onload="this.classList.add('loaded')" onclick="openModal('/outputs/${
+      photo.name
+    }', '${photo.name}')">
         <div class="photo-info">
           <div class="photo-name">${photo.name}</div>
           <div class="photo-size">${formatFileSize(photo.size)}</div>
@@ -52,7 +54,7 @@ function htmlTemplate(photos) {
       </div>`;
   });
 
-  // Theme filter buttons
+  // Theme filter buttons`
   let themeFilterHtml = `
     <div class="theme-filter">
       <button class="theme-btn active" data-theme="all" onclick="filterTheme('all', this)">All Themes</button>
@@ -79,7 +81,9 @@ function htmlTemplate(photos) {
                   <div class="img-group-variant">
                     <img src="/outputs/${photo.name}" alt="${
                 photo.name
-              }" class="photo-img blur-up">
+              }" class="photo-img blur-up" onload="this.classList.add('loaded')" onclick="openModal('/outputs/${
+                photo.name
+              }', '${photo.name}')">
                     <div class="img-theme">${theme}</div>
                     <div class="photo-size">${formatFileSize(photo.size)}</div>
                   </div>
@@ -99,86 +103,6 @@ function htmlTemplate(photos) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Photo Gallery</title>
     <link rel="stylesheet" href="/gallery.css">
-    <style>
-      .toggle-btn-row {
-        margin: 2rem 0 1.5rem 0;
-        text-align: center;
-      }
-      .group-toggle-btn {
-        display: inline-block;
-        margin: 0 0.5rem 1.5rem 0.5rem;
-        padding: 0.4rem 1.1rem;
-        background: #eee;
-        color: #6e8efb;
-        border-radius: 4px;
-        border: none;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background 0.2s, color 0.2s;
-      }
-      .group-toggle-btn.active {
-        background: linear-gradient(135deg,#6e8efb,#a777e3);
-        color: #fff;
-      }
-      .img-group-card {
-        background: #fafbff;
-        border-radius: 8px;
-        box-shadow: 0 1px 6px rgba(110,142,251,0.07);
-        padding: 1rem;
-        margin-bottom: 1.5rem;
-      }
-      .img-group-title {
-        font-weight: bold;
-        margin-bottom: 0.7rem;
-        color: #a777e3;
-      }
-      .img-group-variants {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-      }
-      .img-group-variant {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 120px;
-      }
-      .img-group-variant img {
-        max-width: 110px;
-        max-height: 70px;
-        border-radius: 6px;
-        background: #eee;
-        margin-bottom: 0.3rem;
-      }
-      .img-group-variant .img-theme {
-        font-size: 0.92rem;
-        color: #6e8efb;
-        word-break: break-all;
-        text-align: center;
-      }
-      .theme-filter {
-        margin-bottom: 2rem;
-        text-align: center;
-      }
-      .theme-btn {
-        display: inline-block;
-        margin: 0 0.3rem 0.5rem 0.3rem;
-        padding: 0.5rem 1.2rem;
-        border: none;
-        border-radius: 4px;
-        background: #e0e0e0;
-        color: #333;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: background 0.3s, color 0.3s, transform 0.3s;
-      }
-      .theme-btn.active,
-      .theme-btn:hover {
-        background: linear-gradient(135deg, #6e8efb, #a777e3);
-        color: #fff;
-        transform: scale(1.05);
-      }
-    </style>
 </head>
 <body>
     <header>
@@ -207,6 +131,12 @@ function htmlTemplate(photos) {
           ${groupedHtml}
         </div>
     </div>
+    <!-- Modal HTML -->
+    <div class="modal" id="imgModal" onclick="closeModal(event)">
+      <span class="modal-close" onclick="closeModal(event)">&times;</span>
+      <img class="modal-img" id="modalImg" src="" alt="">
+      <div class="modal-caption" id="modalCaption"></div>
+    </div>
     <script>
       function toggleGroup(grouped) {
         document.getElementById('allImagesSection').style.display = grouped ? 'none' : '';
@@ -225,6 +155,26 @@ function htmlTemplate(photos) {
           }
         });
       }
+      // Modal logic
+      function openModal(src, caption) {
+        var modal = document.getElementById('imgModal');
+        var modalImg = document.getElementById('modalImg');
+        var modalCaption = document.getElementById('modalCaption');
+        modal.classList.add('open');
+        modalImg.src = src;
+        modalCaption.textContent = caption;
+      }
+      function closeModal(event) {
+        if (event.target.classList.contains('modal') || event.target.classList.contains('modal-close')) {
+          document.getElementById('imgModal').classList.remove('open');
+        }
+      }
+      // Optional: ESC key closes modal
+      document.addEventListener('keydown', function(e) {
+        if (e.key === "Escape") {
+          document.getElementById('imgModal').classList.remove('open');
+        }
+      });
     </script>
 </body>
 </html>

@@ -1,3 +1,8 @@
+const path = require("path");
+const sizeOf = require("image-size");
+
+const PHOTOS_DIR = path.join(__dirname, "..", "outputs");
+
 function formatFileSize(bytes) {
   if (bytes === 0) return "0 Bytes";
   const k = 1024;
@@ -202,9 +207,14 @@ function htmlTemplate(photos) {
               '<div class="info-row"><span class="info-label">Theme:</span> <span class="info-value">' + data.theme + "</span></div>" +
               '<div class="info-row"><span class="info-label">Pixelate:</span> <span class="info-value">' + (data.pixelate ? "Yes" : "No") + "</span></div>" +
               '<div class="info-row"><span class="info-label">Size:</span> <span class="info-value">' + (data.size/1024).toFixed(1) + " KB</span></div>" +
+              '<div class="info-row"><span class="info-label">Dimensions:</span> <span class="info-value">' + (data.width && data.height ? data.width + " × " + data.height + " px" : "Unknown") + "</span></div>" +
+              '<div class="info-row"><span class="info-label">Type:</span> <span class="info-value">' + (data.type || "Unknown") + "</span></div>" +
+              '<div class="info-row"><span class="info-label">MIME:</span> <span class="info-value">' + (data.mime || "Unknown") + "</span></div>" +
               '<div class="info-row"><span class="info-label">Created:</span> <span class="info-value">' + new Date(data.created).toLocaleString() + "</span></div>" +
+              '<div class="info-row"><span class="info-label">Modified:</span> <span class="info-value">' + new Date(data.modified).toLocaleString() + "</span></div>" +
               '<div class="info-row"><span class="info-label">Extension:</span> <span class="info-value">' + data.ext + "</span></div>" +
-              '<div class="info-row"><span class="info-label">Base:</span> <span class="info-value">' + data.base + "</span></div>";
+              '<div class="info-row"><span class="info-label">Base:</span> <span class="info-value">' + data.base + "</span></div>" +
+              '<div class="info-row"><span class="info-label">SHA-256:</span> <span class="info-value" style="font-size:0.85em;word-break:break-all;">' + data.hash + "</span></div>";
           })
           .catch(() => {
             infoLoading.style.display = 'none';

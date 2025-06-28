@@ -43,6 +43,18 @@ router.get("/image-info/:filename", (req, res) => {
     }
   }
 
+  // Calculate aspect ratio as a string (e.g. "16:9")
+  let aspectRatio = "Unknown";
+  if (dimensions.width && dimensions.height) {
+    function gcd(a, b) {
+      return b === 0 ? a : gcd(b, a % b);
+    }
+    const divisor = gcd(dimensions.width, dimensions.height);
+    aspectRatio = `${dimensions.width / divisor}:${
+      dimensions.height / divisor
+    }`;
+  }
+
   // Get MIME type
   const mimeType = mime.lookup(filePath) || "unknown";
 
@@ -67,6 +79,7 @@ router.get("/image-info/:filename", (req, res) => {
     absPath: filePath,
     readable: fs.accessSync(filePath, fs.constants.R_OK) === undefined,
     writable: fs.accessSync(filePath, fs.constants.W_OK) === undefined,
+    aspectRatio,
   });
 });
 

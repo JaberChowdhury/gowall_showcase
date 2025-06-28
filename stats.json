@@ -4,12 +4,17 @@
     "hand-9007251_tokyo-storm.jpg": 1,
     "minimal-wallpaper-7306018_tokyo-storm.jpg": 1,
     "blockchain-9007249_tokyo-storm.jpg": 1,
-    "view-three-dimensional-tree_pixelate.jpg": 2,
-    "circuit-7955446_monokai.png": 1
+    "view-three-dimensional-tree_pixelate.jpg": 3,
+    "circuit-7955446_monokai.png": 1,
+    "pexels-robert-clark-504241532-23823961_pixelate.jpg": 1,
+    "minimal-wallpaper-7306018_sunset-tangerine.jpg": 1,
+    "hand-9007251_arcdark.jpg": 1
   },
   "themes": {
-    "unknown": 3,
+    "unknown": 5,
     "tokyo-storm": 3,
-    "monokai": 1
+    "monokai": 1,
+    "sunset-tangerine": 1,
+    "arcdark": 1
   }
 }

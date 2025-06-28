@@ -236,20 +236,4 @@ router.get("/dashboard", (req, res) => {
   `);
 });
 
-// API endpoint to record a click
-router.post("/api/track", express.json(), (req, res) => {
-  const { image, theme } = req.body;
-  if (!image || !theme) return res.status(400).json({ ok: false });
-
-  const stats = loadStats();
-  stats.images = stats.images || {};
-  stats.themes = stats.themes || {};
-
-  stats.images[image] = (stats.images[image] || 0) + 1;
-  stats.themes[theme] = (stats.themes[theme] || 0) + 1;
-
-  saveStats(stats);
-  res.json({ ok: true });
-});
-
 module.exports = router;

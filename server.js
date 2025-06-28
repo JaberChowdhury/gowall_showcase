@@ -7,6 +7,8 @@ const fs = require("fs");
 const galleryRoutes = require("./routes/gallery");
 const uploadRoutes = require("./routes/upload");
 const dashboardRoutes = require("./routes/dashboard");
+const imageApi = require("./api/image");
+const trackApi = require("./api/track");
 
 const app = express();
 const PORT = 3000;
@@ -33,6 +35,10 @@ if (!fs.existsSync(PHOTOS_DIR)) {
 app.use("/", galleryRoutes);
 app.use("/", uploadRoutes);
 app.use("/", dashboardRoutes);
+
+// API routes
+app.use("/api", imageApi);
+app.use("/api", trackApi);
 
 // Start the server
 app.listen(PORT, () => {

@@ -18,6 +18,44 @@ function htmlTemplate(photos) {
     new Set(photos.map((photo) => extractTheme(photo.name)))
   ).sort();
 
+  // Prepare the gallery HTML here (avoid backticks inside backticks)
+  let galleryHtml = "";
+  photos.forEach((photo) => {
+    const theme = extractTheme(photo.name);
+    const thumbSrc = "/outputs/" + photo.name;
+    const fullSrc = "/outputs/" + photo.name;
+    galleryHtml +=
+      '<div class="photo-card" data-theme="' +
+      theme +
+      '">' +
+      '<img loading="lazy" src="' +
+      thumbSrc +
+      '" data-full="' +
+      fullSrc +
+      '" alt="' +
+      photo.name +
+      '" class="photo-img blur-up" onclick="openModal(\'' +
+      fullSrc +
+      "')\">" +
+      '<div class="photo-info">' +
+      '<div class="photo-name">' +
+      photo.name +
+      "</div>" +
+      '<div class="photo-size">' +
+      formatFileSize(photo.size) +
+      "</div>" +
+      "</div>" +
+      "</div>";
+  });
+
+  // Theme buttons HTML
+  const themeButtons = themes
+    .map(
+      (theme) =>
+        `<button class="theme-btn" data-theme="${theme}" onclick="filterTheme(event, '${theme}')">${theme}</button>`
+    )
+    .join("");
+
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -76,39 +114,10 @@ function htmlTemplate(photos) {
         </div>
         <div class="theme-filter">
             <button class="theme-btn active" data-theme="all" onclick="filterTheme(event, 'all')">All</button>
-            ${themes
-              .map(
-                (theme) =>
-                  `<button class="theme-btn" data-theme="${theme}" onclick="filterTheme(event, '${theme}')">${theme}</button>`
-              )
-              .join("")}
+            ${themeButtons}
         </div>
         <div class="gallery" id="gallery">
-            ${
-              photos.length > 0
-                ? photos
-                    .map((photo) => {
-                      const theme = extractTheme(photo.name);
-                      // Assume thumbnail is outputs/thumbs/filename (you can generate these)
-                      const thumbSrc = `/outputs/${photo.name}`; // Replace with `/outputs/thumbs/${photo.name}` if you have thumbs
-                      const fullSrc = `/outputs/${photo.name}`;
-                      return `
-                <div class="photo-card" data-theme="${theme}">
-                    <img loading="lazy" src="${thumbSrc}" data-full="${fullSrc}" alt="${
-                        photo.name
-                      }" class="photo-img blur-up" onclick="openModal('${fullSrc}')">
-                    <div class="photo-info">
-                        <div class="photo-name">${photo.name}</div>
-                        <div class="photo-size">${formatFileSize(
-                          photo.size
-                        )}</div>
-                    </div>
-                </div>
-            `;
-                    })
-                    .join("")
-                : '<div class="no-photos">No photos found. Upload some images to get started!</div>'
-            }
+          ${galleryHtml}
         </div>
     </div>
     <div class="modal" id="imgModal" onclick="closeModal(event)">
@@ -116,45 +125,42 @@ function htmlTemplate(photos) {
         <img id="modalImg" class="modal-img" src="" alt="Preview">
     </div>
     <script>
-        function openModal(src) {
-            document.getElementById('modalImg').src = src;
-            document.getElementById('imgModal').classList.add('open');
-        }
-        function closeModal(event) {
-            if (event.target.classList.contains('modal') || event.target.classList.contains('modal-close')) {
-                document.getElementById('imgModal').classList.remove('open');
-                document.getElementById('modalImg').src = '';
-            }
-        }
-        document.addEventListener('keydown', function(e) {
-            if (e.key === "Escape") {
-                document.getElementById('imgModal').classList.remove('open');
-                document.getElementById('modalImg').src = '';
+    // Theme filter logic
+    function filterTheme(event, theme) {
+        event.preventDefault();
+        document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        document.querySelectorAll('.photo-card').forEach(card => {
+            if (theme === 'all' || card.getAttribute('data-theme') === theme) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
             }
         });
-
-        // Theme filter logic
-        function filterTheme(event, theme) {
-            event.preventDefault();
-            // Set active button
-            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            // Filter cards
-            document.querySelectorAll('.photo-card').forEach(card => {
-                if (theme === 'all' || card.getAttribute('data-theme') === theme) {
-                    card.style.display = '';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
+    }
+    // Modal logic
+    function openModal(src) {
+        document.getElementById('modalImg').src = src;
+        document.getElementById('imgModal').classList.add('open');
+    }
+    function closeModal(event) {
+        if (event.target.classList.contains('modal') || event.target.classList.contains('modal-close')) {
+            document.getElementById('imgModal').classList.remove('open');
+            document.getElementById('modalImg').src = '';
         }
-
-        // Blur-up effect for images
-        document.querySelectorAll('.photo-img').forEach(img => {
-            img.addEventListener('load', function() {
-                img.classList.add('loaded');
-            });
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === "Escape") {
+            document.getElementById('imgModal').classList.remove('open');
+            document.getElementById('modalImg').src = '';
+        }
+    });
+    // Blur-up effect for images
+    document.querySelectorAll('.photo-img').forEach(img => {
+        img.addEventListener('load', function() {
+            img.classList.add('loaded');
         });
+    });
     </script>
 </body>
 </html>
